@@ -117,5 +117,63 @@ const getAllUsers = async (req, res) => {
     }
   };
 
+  const getSingleUser = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const userinfo = await prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+  
+      if (!userinfo) {
+        return res.status(404).json({ message: "user not found" });
+      }
+  
+      res.status(200).json(userinfo); // Use status code 200 for success
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  
+  const handleLogout = async (req, res) => {
+    try {
+      res.clearCookie("access_token");
+      return res.json({message: "Logout successfully"});
+    } catch (error) {
+      errorResponse(res, {
+        statusCode: 500,
+        message: error.message,
+      });
+    }
+  };
+  
+  const deleteUser = async (req, res) => {
+    try {
+      const userId = req.params.id; // Assuming userId is of type Int in the database
+  
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Delete the user
+      await prisma.user.delete({
+        where: {
+          id: userId,
+        },
+      });
+  
+      return res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  };
 
-module.exports = {handleRegister, handleLogin, getAllUsers}
+
+module.exports = {handleRegister, handleLogin, getAllUsers, getSingleUser, handleLogout, deleteUser}
