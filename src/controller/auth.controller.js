@@ -101,6 +101,21 @@ const handleLogin = async (req, res) => {
         message: error.message,
       });
     }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+      const users = await prisma.user.findMany();
+      return res.status(200).json({
+        message: "All user data fetched",
+        users: users,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
   };
 
-module.exports = {handleRegister, handleLogin}
+
+module.exports = {handleRegister, handleLogin, getAllUsers}
